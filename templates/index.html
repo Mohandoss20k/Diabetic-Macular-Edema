@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row align-items-center min-vh-75">
+    <div class="col-lg-6">
+        <h1 class="display-4 fw-bold mb-4">Diabetic Retinopathy Detection</h1>
+        <p class="lead mb-4">
+            Advanced AI-powered fusion model combining OCT and Fundus imaging 
+            for accurate diabetic retinopathy diagnosis.
+        </p>
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-microscope text-primary"></i> OCT Analysis</h5>
+                        <p class="card-text">5-class classification including Mild, Moderate, Normal, Proliferate, Severe</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-eye text-success"></i> Fundus Analysis</h5>
+                        <p class="card-text">7-class classification from No DR to Advanced PDR</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% if not session.user_id %}
+            <div class="d-grid gap-2 d-md-flex">
+                <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg px-4 me-md-2">
+                    <i class="fas fa-user-plus"></i> Get Started
+                </a>
+                <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-lg px-4">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+            </div>
+        {% else %}
+            <a href="{{ url_for('predict') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-microscope"></i> Make Prediction
+            </a>
+        {% endif %}
+    </div>
+    <div class="col-lg-6">
+        <img src="https://via.placeholder.com/600x400?text=DR+Fusion+Model" alt="DR Detection" class="img-fluid rounded shadow">
+    </div>
+</div>
+
+<div class="row mt-5 pt-5">
+    <div class="col-12 text-center mb-4">
+        <h2>How It Works</h2>
+    </div>
+    <div class="col-md-4">
+        <div class="text-center">
+            <i class="fas fa-upload fa-3x text-primary mb-3"></i>
+            <h4>1. Upload Images</h4>
+            <p>Upload both OCT and Fundus images for comprehensive analysis</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="text-center">
+            <i class="fas fa-brain fa-3x text-primary mb-3"></i>
+            <h4>2. AI Analysis</h4>
+            <p>Advanced deep learning models analyze both image types</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="text-center">
+            <i class="fas fa-chart-line fa-3x text-primary mb-3"></i>
+            <h4>3. Fusion Results</h4>
+            <p>Get combined prediction with confidence scores and recommendations</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

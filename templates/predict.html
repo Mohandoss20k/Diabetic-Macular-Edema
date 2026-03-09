@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2><i class="fas fa-microscope"></i> New Prediction</h2>
+        <p class="lead">Upload OCT and Fundus images for comprehensive analysis</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data" id="predictionForm">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label for="oct_image" class="form-label">
+                                <i class="fas fa-microscope text-primary"></i> OCT Image
+                            </label>
+                            <div class="upload-area border rounded p-4 text-center" id="octUpload">
+                                <input type="file" class="d-none" id="oct_image" name="oct_image" accept="image/*" required>
+                                <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                <p class="mb-2">Click or drag to upload OCT image</p>
+                                <small class="text-muted">Supported: JPG, PNG, TIFF</small>
+                                <div class="preview mt-3" id="octPreview"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="fundus_image" class="form-label">
+                                <i class="fas fa-eye text-success"></i> Fundus Image
+                            </label>
+                            <div class="upload-area border rounded p-4 text-center" id="fundusUpload">
+                                <input type="file" class="d-none" id="fundus_image" name="fundus_image" accept="image/*" required>
+                                <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                <p class="mb-2">Click or drag to upload Fundus image</p>
+                                <small class="text-muted">Supported: JPG, PNG, TIFF</small>
+                                <div class="preview mt-3" id="fundusPreview"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                            <i class="fas fa-microscope"></i> Analyze Images
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    // Handle OCT upload
+    $('#octUpload').on('click', function() {
+        $('#oct_image').click();
+    });
+    
+    $('#oct_image').on('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                $('#octPreview').html(`<img src="${e.target.result}" class="img-fluid rounded" style="max-height: 150px;">`);
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    // Handle Fundus upload
+    $('#fundusUpload').on('click', function() {
+        $('#fundus_image').click();
+    });
+    
+    $('#fundus_image').on('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                $('#fundusPreview').html(`<img src="${e.target.result}" class="img-fluid rounded" style="max-height: 150px;">`);
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    // Drag and drop functionality
+    $('.upload-area').on('dragover', function(e) {
+        e.preventDefault();
+        $(this).addClass('border-primary bg-light');
+    });
+    
+    $('.upload-area').on('dragleave', function(e) {
+        e.preventDefault();
+        $(this).removeClass('border-primary bg-light');
+    });
+    
+    $('.upload-area').on('drop', function(e) {
+        e.preventDefault();
+        $(this).removeClass('border-primary bg-light');
+        
+        const files = e.originalEvent.dataTransfer.files;
+        if ($(this).attr('id') === 'octUpload') {
+            $('#oct_image')[0].files = files;
+            if (files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#octPreview').html(`<img src="${e.target.result}" class="img-fluid rounded" style="max-height: 150px;">`);
+                }
+                reader.readAsDataURL(files[0]);
+            }
+        } else {
+            $('#fundus_image')[0].files = files;
+            if (files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#fundusPreview').html(`<img src="${e.target.result}" class="img-fluid rounded" style="max-height: 150px;">`);
+                }
+                reader.readAsDataURL(files[0]);
+            }
+        }
+    });
+    
+    // Form validation
+    $('#predictionForm').on('submit', function(e) {
+        const octFile = $('#oct_image')[0].files[0];
+        const fundusFile = $('#fundus_image')[0].files[0];
+        
+        if (!octFile || !fundusFile) {
+            e.preventDefault();
+            alert('Please upload both OCT and Fundus images');
+            return false;
+        }
+        
+        // Show loading state
+        $('#submitBtn').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Analyzing...');
+        $('#submitBtn').prop('disabled', true);
+    });
+});
+</script>
+{% endblock %}

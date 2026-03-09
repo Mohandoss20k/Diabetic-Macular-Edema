@@ -1,0 +1,6 @@
+*.pth
+*.pt
+*.h5
+__pycache__/
+*.db
+static/uploads/

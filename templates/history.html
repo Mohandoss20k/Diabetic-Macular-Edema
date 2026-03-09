@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="fas fa-history"></i> Prediction History</h2>
+        <p class="lead">View all your previous predictions</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                {% if predictions %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date & Time</th>
+                                    <th>Image Type</th>
+                                    <th>Filename</th>
+                                    <th>Prediction</th>
+                                    <th>Confidence</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for pred in predictions %}
+                                <tr>
+                                    <td>{{ pred.created_at }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ 'primary' if pred.image_type == 'oct' else 'success' }}">
+                                            <i class="fas fa-{{ 'microscope' if pred.image_type == 'oct' else 'eye' }}"></i>
+                                            {{ pred.image_type|upper }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <small>{{ pred.filename|truncate(30) }}</small>
+                                    </td>
+                                    <td>
+                                        <strong>{{ pred.prediction }}</strong>
+                                    </td>
+                                    <td style="width: 150px;">
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar bg-{{ 'success' if pred.confidence > 80 else 'warning' if pred.confidence > 60 else 'danger' }}" 
+                                                 style="width: {{ pred.confidence }}%">
+                                                {{ "%.1f"|format(pred.confidence) }}%
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="viewDetails({{ pred.id }})">
+                                            <i class="fas fa-eye"></i> View
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-history fa-4x text-muted mb-3"></i>
+                        <h5>No predictions yet</h5>
+                        <p class="text-muted">Start by making your first prediction</p>
+                        <a href="{{ url_for('predict') }}" class="btn btn-primary">
+                            <i class="fas fa-microscope"></i> Make Prediction
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Details Modal -->
+<div class="modal fade" id="detailsModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Prediction Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                Loading...
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+function viewDetails(predictionId) {
+    // This would fetch details from an API endpoint
+    // For now, just show a placeholder
+    const modal = new bootstrap.Modal(document.getElementById('detailsModal'));
+    document.getElementById('modalBody').innerHTML = `
+        <div class="text-center">
+            <i class="fas fa-spinner fa-spin fa-3x text-primary"></i>
+            <p class="mt-3">Loading prediction details...</p>
+        </div>
+    `;
+    modal.show();
+    
+    // You would typically fetch data here:
+    /*
+    fetch(`/api/prediction/${predictionId}`)
+        .then(response => response.json())
+        .then(data => {
+            // Update modal with data
+        });
+    */
+}
+</script>
+{% endblock %}
